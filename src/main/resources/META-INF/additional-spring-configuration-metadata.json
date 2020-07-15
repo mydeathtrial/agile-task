@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "agile.task.enable",
+      "type": "java.lang.Boolean",
+      "description": "Agile定时任务支持",
+      "defaultValue": true
+    }
+  ]
+}
