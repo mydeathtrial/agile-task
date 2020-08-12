@@ -1,9 +1,9 @@
 package com.agile;
 
-import com.agile.common.task.Target;
-import com.agile.common.task.Task;
-import com.agile.common.task.TaskManager;
-import com.agile.common.task.TaskServiceImpl;
+import cloud.agileframework.task.Target;
+import cloud.agileframework.task.Task;
+import cloud.agileframework.task.TaskManager;
+import cloud.agileframework.task.TaskServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,20 +58,28 @@ public class TestTask {
             @Override
             public List<Target> targets() {
                 return new ArrayList<Target>() {{
-                    add(() -> {
-                        try {
-                            return TaskServiceImpl.class.getMethod("getTask").toGenericString();
-                        } catch (NoSuchMethodException e) {
-                            e.printStackTrace();
+                    add(new Target() {
+                        @Override
+                        public String getCode() {
+                            try {
+                                return TaskServiceImpl.class.getMethod("getTask").toGenericString();
+                            } catch (NoSuchMethodException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
                         }
-                        return null;
+
+                        @Override
+                        public String getArgument() {
+                            return null;
+                        }
+
+                        @Override
+                        public int getOrder() {
+                            return 0;
+                        }
                     });
                 }};
-            }
-
-            @Override
-            public String getArgument() {
-                return "1";
             }
         });
     }

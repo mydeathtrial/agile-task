@@ -1,4 +1,4 @@
-package com.agile.common.task;
+package cloud.agileframework.task;
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 

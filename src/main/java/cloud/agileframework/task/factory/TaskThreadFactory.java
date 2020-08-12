@@ -1,4 +1,4 @@
-package com.agile.common.factory;
+package cloud.agileframework.task.factory;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

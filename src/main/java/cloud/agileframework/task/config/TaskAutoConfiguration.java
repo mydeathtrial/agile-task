@@ -1,15 +1,16 @@
-package com.agile.common.config;
+package cloud.agileframework.task.config;
 
-import com.agile.common.task.TaskManager;
-import com.agile.common.task.TaskProxy;
-import com.agile.common.task.TaskService;
-import com.agile.common.task.TaskServiceImpl;
+import cloud.agileframework.task.TaskManager;
+import cloud.agileframework.task.TaskProxy;
+import cloud.agileframework.task.TaskService;
+import cloud.agileframework.task.TaskServiceImpl;
+import cloud.agileframework.task.controller.TaskController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 描述：
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Lazy;
  * @version 1.0
  * @since 1.0
  */
+@EnableScheduling
 @Configuration
 @ConditionalOnProperty(name = "enable", prefix = "agile.task")
 public class TaskAutoConfiguration {
@@ -33,11 +35,14 @@ public class TaskAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(
-            type = {"com.agile.common.task.TaskService"}
-    )
-    @Lazy
+    @ConditionalOnMissingBean(TaskService.class)
     public TaskService taskService() {
         return new TaskServiceImpl();
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "enable", prefix = "agile.task.controller")
+    public TaskController taskController() {
+        return new TaskController();
     }
 }

@@ -5,6 +5,12 @@
       "type": "java.lang.Boolean",
       "description": "Agile定时任务支持",
       "defaultValue": true
+    },
+    {
+      "name": "agile.task.controller.enable",
+      "type": "java.lang.Boolean",
+      "description": "Agile定时任务对外接口开关",
+      "defaultValue": false
     }
   ]
 }

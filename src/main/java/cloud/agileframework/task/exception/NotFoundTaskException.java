@@ -1,4 +1,4 @@
-package com.agile.common.exception;
+package cloud.agileframework.task.exception;
 
 /**
  * @author 佟盟

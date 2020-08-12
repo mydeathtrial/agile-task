@@ -1,7 +1,7 @@
-package com.agile.common.task;
+package cloud.agileframework.task;
 
-import com.agile.common.exception.NotFoundTaskException;
-import com.agile.common.factory.TaskThreadFactory;
+import cloud.agileframework.task.exception.NotFoundTaskException;
+import cloud.agileframework.task.factory.TaskThreadFactory;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

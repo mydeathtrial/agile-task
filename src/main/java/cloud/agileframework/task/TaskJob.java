@@ -1,4 +1,4 @@
-package com.agile.common.task;
+package cloud.agileframework.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,9 +9,8 @@ import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,6 +24,7 @@ public class TaskJob implements Runnable {
 
     static final String START_TASK = "任务:[{}][开始执行]";
     static final String NO_API_TASK = "任务:[%s][非法任务，未绑定任何api信息，任务结束]";
+    static final String NO_SUCH_METHOD_TASK = "任务:[%s][未找到对应的任务执行方法%s]";
     static final String ILLEGAL_API_TASK = "任务:[%s][非法任务，入参大于1个，任务结束]";
     static final String EXCEPTION_API_TASK = "任务:[%s][任务异常]";
     static final String RUN_TASK_API = "任务:[{}][执行]";
@@ -40,19 +40,16 @@ public class TaskJob implements Runnable {
      */
     private final TaskService taskService;
     private final Task task;
-    private final List<Method> methods = new ArrayList<>();
+
     /**
      * 任务执行代理
      */
     private final TaskProxy taskProxy;
 
-    public TaskJob(TaskService taskService, TaskProxy taskProxy, Task task) throws NoSuchMethodException {
+    public TaskJob(TaskService taskService, TaskProxy taskProxy, Task task) {
         this.taskService = taskService;
         this.taskProxy = taskProxy;
         this.task = task;
-        for (Target target : task.targets()) {
-            methods.add(TaskManager.getApi(target.getCode()));
-        }
     }
 
     @Override
@@ -145,15 +142,24 @@ public class TaskJob implements Runnable {
     }
 
     private void running(RunDetail runDetail) {
-        if (ObjectUtils.isEmpty(getMethods())) {
+        if (ObjectUtils.isEmpty(task.targets())) {
             String log = String.format(NO_API_TASK, getTask().getCode());
             runDetail.addLog(log);
             logger.error(String.format(log, runDetail.getTaskCode()));
             return;
         }
 
-        getMethods().forEach(method -> {
+        task.targets().stream().sorted(Comparator.comparingInt(Target::getOrder)).forEach(target -> {
             String log;
+            Method method;
+            try {
+                method = TaskManager.getApi(target.getCode());
+            } catch (NoSuchMethodException e) {
+                log = String.format(NO_SUCH_METHOD_TASK, task.getCode(), target.getCode());
+                runDetail.addLog(log);
+                logger.error(log);
+                return;
+            }
             String code = method.toGenericString();
             if (method.getParameterCount() > 1) {
                 log = String.format(ILLEGAL_API_TASK, code);
@@ -165,7 +171,7 @@ public class TaskJob implements Runnable {
             Optional.ofNullable(taskProxy).ifPresent(proxy -> {
                 try {
                     logger.debug(RUN_TASK_API, code);
-                    proxy.invoke(method, getTask());
+                    proxy.invoke(method, target.getArgument(), getTask());
                 } catch (InvocationTargetException | IllegalAccessException e) {
                     logger.error(String.format(EXCEPTION_RUN_TASK_API, code), e);
                     exception(e, runDetail);
@@ -176,9 +182,5 @@ public class TaskJob implements Runnable {
 
     public Task getTask() {
         return task;
-    }
-
-    public List<Method> getMethods() {
-        return methods;
     }
 }

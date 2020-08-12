@@ -1,4 +1,4 @@
-package com.agile.common.task;
+package cloud.agileframework.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,11 +113,6 @@ public class TaskServiceImpl implements TaskService {
                 @Override
                 public List<Target> targets() {
                     return task.targets();
-                }
-
-                @Override
-                public String getArgument() {
-                    return task.getArgument();
                 }
             });
         }

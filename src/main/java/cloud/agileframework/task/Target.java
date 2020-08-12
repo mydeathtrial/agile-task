@@ -1,7 +1,5 @@
-package com.agile.common.task;
+package cloud.agileframework.task;
 
-
-import java.lang.reflect.Method;
 
 /**
  * @author 佟盟
@@ -19,12 +17,16 @@ public interface Target {
     String getCode();
 
     /**
-     * 根据方法创建执行目标
+     * 任务入参
      *
-     * @param method 方法
-     * @return 执行目标
+     * @return 字符串入参
      */
-    static Target create(Method method) {
-        return method::toGenericString;
-    }
+    String getArgument();
+
+    /**
+     * 排序
+     *
+     * @return 优先级
+     */
+    int getOrder();
 }

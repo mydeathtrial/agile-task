@@ -1,4 +1,4 @@
-package com.agile.common.task;
+package cloud.agileframework.task;
 
 import java.util.List;
 
@@ -51,11 +51,4 @@ public interface Task {
      * @return 目标方法集
      */
     List<Target> targets();
-
-    /**
-     * 任务入参
-     *
-     * @return 字符串入参
-     */
-    String getArgument();
 }
