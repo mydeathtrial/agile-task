@@ -42,10 +42,6 @@ public class TaskController {
         System.out.println(id);
     }
 
-    public static void main(String[] args) throws NoSuchMethodException {
-        System.out.println(TaskController.class.getMethod("hello", Task.class).toGenericString());
-    }
-
     @PostMapping(value = "/task")
     public void add(@RequestBody CustomTask task, HttpServletResponse response) throws NoSuchMethodException, NotFoundTaskException, IOException {
         taskManager.updateTask(task);
