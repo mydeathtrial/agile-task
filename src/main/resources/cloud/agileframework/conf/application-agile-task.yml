@@ -1,0 +1,10 @@
+agile:
+  task:
+    controller:
+      enable: false
+    enable: false
+spring:
+  task:
+    scheduling:
+      pool:
+        size: 10
