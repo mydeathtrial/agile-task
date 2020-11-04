@@ -147,6 +147,9 @@ agile.task.controller.enable=true
 >
 >任务执行方法结构接口：`cloud.agileframework.task.Target`
 >默认执行方法结构：`cloud.agileframework.task.controller.CustomTarget`
+>
+>任务持久化接口：`cloud.agileframework.task.TaskService`
+>默认持久化方法：`cloud.agileframework.task.TaskServiceImpl`
 
 ##### 数据结构说明
  **任务定义(`cloud.agileframework.task.Task`)** 
