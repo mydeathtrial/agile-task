@@ -62,7 +62,7 @@ public class TaskController {
 
     @GetMapping(value = "/task/{taskCode}")
     public void query(@PathVariable Long taskCode, HttpServletResponse response) throws IOException {
-        Optional<Task> taskOptional = taskService.getTask().stream().filter(task -> task.getCode().equals(taskCode)).findFirst();
+        Optional<? extends Task> taskOptional = taskService.getTask().stream().filter(task -> task.getCode().equals(taskCode)).findFirst();
         if (taskOptional.isPresent()) {
             response(true, taskOptional.get(), response);
         } else {

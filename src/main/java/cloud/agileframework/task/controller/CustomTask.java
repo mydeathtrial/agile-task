@@ -1,10 +1,9 @@
 package cloud.agileframework.task.controller;
 
-import cloud.agileframework.task.Target;
 import cloud.agileframework.task.Task;
+import cloud.agileframework.task.TaskManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Method;
 
 /**
  * @author 佟盟
@@ -19,7 +18,8 @@ public class CustomTask implements Task {
     private String cron;
     private boolean sync;
     private boolean enable;
-    private List<CustomTarget> targets;
+    private String methodName;
+    private String argument;
 
     @Override
     public Long getCode() {
@@ -47,8 +47,22 @@ public class CustomTask implements Task {
     }
 
     @Override
-    public List<Target> targets() {
-        return new ArrayList<>(targets);
+    public Method getMethod() {
+        try {
+            return TaskManager.getApi(methodName);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    @Override
+    public String getArgument() {
+        return argument;
     }
 
     public void setCode(Long code) {
@@ -71,8 +85,12 @@ public class CustomTask implements Task {
         this.enable = enable;
     }
 
-    public void setTargets(List<CustomTarget> targets) {
-        this.targets = targets;
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
+    }
+
+    public void setArgument(String argument) {
+        this.argument = argument;
     }
 
     @Override
@@ -83,7 +101,8 @@ public class CustomTask implements Task {
                 ", cron='" + cron + '\'' +
                 ", sync=" + sync +
                 ", enable=" + enable +
-                ", targets=" + targets +
+                ", method=" + methodName +
+                ", argument=" + argument +
                 '}';
     }
 }

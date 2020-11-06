@@ -145,9 +145,6 @@ agile.task.controller.enable=true
 >任务结构:`cloud.agileframework.task.Task`
 >默认结构:`cloud.agileframework.task.controller.CustomTask`
 >
->任务执行方法结构接口：`cloud.agileframework.task.Target`
->默认执行方法结构：`cloud.agileframework.task.controller.CustomTarget`
->
 >任务持久化接口：`cloud.agileframework.task.TaskService`
 >默认持久化方法：`cloud.agileframework.task.TaskServiceImpl`
 
@@ -170,14 +167,14 @@ public interface Task {
     String getName();
 
     /**
-     * 取cron表达式，表达式支持英文分号分隔的多表达式
+     * 取cron表达式
      *
      * @return 定时任务表达式
      */
     String getCron();
 
     /**
-     * 是否集群同步，同步时会调用TaskService的抢占锁方法，抢占成功才执行
+     * 是否集群同步
      *
      * @return 是否
      */
@@ -191,38 +188,18 @@ public interface Task {
     Boolean getEnable();
 
     /**
-     * 任务关联的目标方法，任务调度时会依次调用该参数内部记录的方法
-     *
-     * @return 目标方法集
-     */
-    List<Target> targets();
-}
-```
- **任务执行方法定义(`cloud.agileframework.task.Target`)**
-```
-public interface Target {
-    /**
      * 取任务目标标识
      *
      * @return 唯一标识
      */
-    String getCode();
+    Method getMethod();
 
     /**
-     * 任务入参,pojo类型时使用json串，基本类型使用字符串，运行时将自动转换任务方法入参类型
+     * 任务入参
      *
      * @return 字符串入参
      */
     String getArgument();
-
-    /**
-     * 排序
-     *
-     * @return 优先级
-     */
-    int getOrder();
 }
-``` 
-
-
+```
 

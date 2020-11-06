@@ -1,6 +1,6 @@
 package cloud.agileframework.task;
 
-import java.util.List;
+import java.lang.reflect.Method;
 
 /**
  * @author 佟盟
@@ -46,9 +46,16 @@ public interface Task {
     Boolean getEnable();
 
     /**
-     * 任务关联的目标方法，用于后续调用
+     * 取任务目标标识
      *
-     * @return 目标方法集
+     * @return 唯一标识
      */
-    List<Target> targets();
+    Method getMethod();
+
+    /**
+     * 任务入参
+     *
+     * @return 字符串入参
+     */
+    String getArgument();
 }

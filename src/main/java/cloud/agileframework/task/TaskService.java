@@ -16,30 +16,14 @@ public interface TaskService {
      *
      * @return 定时任务列表
      */
-    List<Task> getTask();
+    List<? extends Task> getTask();
 
     /**
-     * 根据定时任务标识查询所属任务目标
-     *
-     * @param code 定时任务标识
-     * @return 任务目标列表
-     */
-    List<Target> getApisByTaskCode(long code);
-
-    /**
-     * 根据定时任务标识查询所属任务目标
-     *
-     * @param code 定时任务标识
-     * @return 任务目标列表
-     */
-    List<Task> getTasksByApiCode(String code);
-
-    /**
-     * 保存任务和对应的任务列表
+     * 保存或更新任务和对应的任务列表
      *
      * @param task 任务
      */
-    void save(Task task);
+    void saveOrUpdate(Task task);
 
     /**
      * 删除定时任务
@@ -53,14 +37,14 @@ public interface TaskService {
      *
      * @param taskCode 任务标识
      */
-    void run(long taskCode);
+    void running(long taskCode);
 
     /**
-     * 已完成运行
+     * 暂停
      *
      * @param taskCode 任务标识
      */
-    void finish(long taskCode);
+    void suspend(long taskCode);
 
     /**
      * 记录运行日志

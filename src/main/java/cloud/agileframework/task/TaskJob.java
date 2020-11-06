@@ -124,7 +124,7 @@ public class TaskJob implements Runnable {
         }
         if (taskService != null) {
             //通知持久层，任务开始运行
-            taskService.run(runDetail.getTaskCode());
+            taskService.running(runDetail.getTaskCode());
         }
 
     }
@@ -137,46 +137,36 @@ public class TaskJob implements Runnable {
             runDetail.setEndTime(new Date());
             taskService.logging(runDetail);
             //通知持久层，任务开始运行
-            taskService.finish(task.getCode());
+            taskService.suspend(task.getCode());
         }
     }
 
     private void running(RunDetail runDetail) {
-        if (ObjectUtils.isEmpty(task.targets())) {
-            String log = String.format(NO_API_TASK, getTask().getCode());
+        String log;
+        Method method = task.getMethod();
+        if(method == null){
+            log = String.format(NO_SUCH_METHOD_TASK, task.getCode(), method);
             runDetail.addLog(log);
-            logger.error(String.format(log, runDetail.getTaskCode()));
+            logger.error(log);
             return;
         }
 
-        task.targets().stream().sorted(Comparator.comparingInt(Target::getOrder)).forEach(target -> {
-            String log;
-            Method method;
-            try {
-                method = TaskManager.getApi(target.getCode());
-            } catch (NoSuchMethodException e) {
-                log = String.format(NO_SUCH_METHOD_TASK, task.getCode(), target.getCode());
-                runDetail.addLog(log);
-                logger.error(log);
-                return;
-            }
-            String code = method.toGenericString();
-            if (method.getParameterCount() > 1) {
-                log = String.format(ILLEGAL_API_TASK, code);
-                runDetail.addLog(log);
-                logger.error(String.format(log, code));
-                return;
-            }
+        String code = method.toGenericString();
+        if (method.getParameterCount() > 1) {
+            log = String.format(ILLEGAL_API_TASK, code);
+            runDetail.addLog(log);
+            logger.error(String.format(log, code));
+            return;
+        }
 
-            Optional.ofNullable(taskProxy).ifPresent(proxy -> {
-                try {
-                    logger.debug(RUN_TASK_API, code);
-                    proxy.invoke(method, target.getArgument(), getTask());
-                } catch (InvocationTargetException | IllegalAccessException e) {
-                    logger.error(String.format(EXCEPTION_RUN_TASK_API, code), e);
-                    exception(e, runDetail);
-                }
-            });
+        Optional.ofNullable(taskProxy).ifPresent(proxy -> {
+            try {
+                logger.debug(RUN_TASK_API, code);
+                proxy.invoke(method, task.getArgument(), getTask());
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                logger.error(String.format(EXCEPTION_RUN_TASK_API, code), e);
+                exception(e, runDetail);
+            }
         });
     }
 

@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 /**
  * @author 佟盟 on 2018/2/2
@@ -61,14 +62,13 @@ public class TaskManager implements ApplicationRunner {
         threadPoolTaskScheduler.execute(() -> {
             initMethodCache();
             //获取持久层定时任务数据集
-            List<Task> list = taskService.getTask();
+            List<? extends Task> list = taskService.getTask();
             if (logger.isDebugEnabled()) {
                 logger.debug(String.format(INIT_TASKS, list.size()));
             }
             for (Task task : list) {
                 //获取定时任务详情列表
-                List<Target> targets = taskService.getApisByTaskCode(task.getCode());
-                if (ObjectUtils.isEmpty(targets)) {
+                if (ObjectUtils.isEmpty(task.getMethod())) {
                     logger.error(NO_SUCH_TARGETS_ERROR, task.getCode());
                     continue;
                 }
@@ -107,7 +107,7 @@ public class TaskManager implements ApplicationRunner {
      * @param generic 根据方法的toGenericString检索
      * @return 方法信息
      */
-    static Method getApi(String generic) throws NoSuchMethodException {
+    public static Method getApi(String generic) throws NoSuchMethodException {
         Method method = API_BASE_MAP.get(generic);
         if (method == null) {
             throw new NoSuchMethodException(generic);
@@ -124,7 +124,7 @@ public class TaskManager implements ApplicationRunner {
         if (API_BASE_MAP.isEmpty()) {
             initMethodCache();
         }
-        if (ObjectUtils.isEmpty(task.targets())) {
+        if (ObjectUtils.isEmpty(task.getMethod())) {
             logger.error(NO_SUCH_TARGETS_ERROR, task.getCode());
             return;
         }
@@ -183,7 +183,7 @@ public class TaskManager implements ApplicationRunner {
         TASK_INFO_MAP.put(task.getCode(), taskInfo);
 
         // 同步更新持久层数据
-        taskService.save(task);
+        taskService.saveOrUpdate(task);
 
         if (taskInfo.nextExecutionTime() != null && logger.isDebugEnabled()) {
             logger.debug(INIT_TASK, task.getCode(),
@@ -259,8 +259,12 @@ public class TaskManager implements ApplicationRunner {
     }
 
     public void removeTaskByMethod(Method method) throws NotFoundTaskException {
-        List<Task> tasks = taskService.getTasksByApiCode(method.toGenericString());
-        if (tasks == null) {
+        List<? extends Task> tasks = taskService.getTask()
+                .stream()
+                .filter(n -> method.equals(n.getMethod()))
+                .collect(Collectors.toList());
+
+        if (tasks.isEmpty()) {
             return;
         }
         for (Task task : tasks) {

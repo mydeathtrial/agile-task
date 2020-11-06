@@ -3,6 +3,7 @@ package cloud.agileframework.task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,30 +22,12 @@ public class TaskServiceImpl implements TaskService {
     private static final List<Task> TASKS_CACHE = new ArrayList<>();
 
     @Override
-    public List<Task> getTask() {
+    public List<? extends Task> getTask() {
         return TASKS_CACHE;
     }
 
     @Override
-    public List<Target> getApisByTaskCode(long code) {
-        Optional<Task> task = TASKS_CACHE.stream().filter(node -> node.getCode().equals(code)).findFirst();
-        if (task.isPresent()) {
-            return task.get().targets();
-        } else {
-            return new ArrayList<>(0);
-        }
-    }
-
-    @Override
-    public List<Task> getTasksByApiCode(String code) {
-        return TASKS_CACHE.stream().filter(node -> node.targets()
-                .stream()
-                .anyMatch(n -> code.equals(node.getCode().toString())))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void save(Task task) {
+    public void saveOrUpdate(Task task) {
         TASKS_CACHE.removeIf(node -> node.getCode().equals(task.getCode()));
         TASKS_CACHE.add(task);
     }
@@ -56,11 +39,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void run(long taskCode) {
+    public void running(long taskCode) {
     }
 
     @Override
-    public void finish(long taskCode) {
+    public void suspend(long taskCode) {
     }
 
     @Override
@@ -111,8 +94,13 @@ public class TaskServiceImpl implements TaskService {
                 }
 
                 @Override
-                public List<Target> targets() {
-                    return task.targets();
+                public Method getMethod() {
+                    return task.getMethod();
+                }
+
+                @Override
+                public String getArgument() {
+                    return task.getArgument();
                 }
             });
         }
