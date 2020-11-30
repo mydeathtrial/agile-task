@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.util.ProxyUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
  * @author 佟盟 on 2018/2/2
  * @author 佟盟
  */
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class TaskManager implements ApplicationRunner {
     private final Logger logger = LoggerFactory.getLogger(TaskManager.class);
 
