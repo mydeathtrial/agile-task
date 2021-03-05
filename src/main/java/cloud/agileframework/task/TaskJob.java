@@ -2,14 +2,12 @@ package cloud.agileframework.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ObjectUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
 
@@ -112,7 +110,7 @@ public class TaskJob implements Runnable {
      */
     public static String exceptionToString(Throwable e) {
         StringWriter writer = new StringWriter();
-        try (PrintWriter pw = new PrintWriter(writer);) {
+        try (PrintWriter pw = new PrintWriter(writer)) {
             e.printStackTrace(pw);
         }
         return writer.toString();
@@ -144,7 +142,7 @@ public class TaskJob implements Runnable {
     private void running(RunDetail runDetail) {
         String log;
         Method method = task.getMethod();
-        if(method == null){
+        if (method == null) {
             log = String.format(NO_SUCH_METHOD_TASK, task.getCode(), method);
             runDetail.addLog(log);
             logger.error(log);

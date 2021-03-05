@@ -22,7 +22,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @EnableScheduling
 @Configuration
-@ConditionalOnProperty(name = "enable", prefix = "agile.task")
+@ConditionalOnProperty(name = "enable", prefix = "agile.task", matchIfMissing = true)
 public class TaskAutoConfiguration {
     @Bean
     public TaskManager customTaskServer(ApplicationContext applicationContext, TaskService taskTargetService, TaskProxy taskProxy) {
