@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * @author 佟盟
  * 日期 2020/4/29 18:47
- * 描述 定时任务信息接口
+ * 描述 定时任务执行器
  * @version 1.0
  * @since 1.0
  */
